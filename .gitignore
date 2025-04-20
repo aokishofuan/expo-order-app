@@ -7,7 +7,7 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Runtime data
@@ -58,6 +58,9 @@ web_modules/
 .stylelintcache
 
 # Microbundle cache
+.cache
+.parcel-cache
+.nyc_output
 .rpt2_cache/
 .rts2_cache_cjs/
 .rts2_cache_es/
@@ -134,3 +137,25 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.lock-wscript
+.vscode-test
+.DS_Store
+*.pem
+.node_repl_history
+.yarn-integrity
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
