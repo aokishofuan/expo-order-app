@@ -1,10 +1,9 @@
 // src/pages/index.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import OrderForm from '../components/OrderForm';
 import { Order } from '../types/Order';
 
 const HomePage: React.FC = () => {
-  // const [orders, setOrders] = useState<Order[]>([]);
 
   const handleAddOrder = (newOrder: Order) => {
     const storedOrders = localStorage.getItem('orders');
@@ -13,7 +12,6 @@ const HomePage: React.FC = () => {
     const updatedOrders = [...existingOrders, newOrder];
     localStorage.setItem('orders', JSON.stringify(updatedOrders));
 
-    // setOrders(updatedOrders); // 状態も更新（あれば便利）
     console.log('新しい注文を保存しました:', newOrder);
   };
 
