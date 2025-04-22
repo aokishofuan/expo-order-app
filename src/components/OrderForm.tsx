@@ -58,8 +58,8 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
   const handleSubmit = () => {
     const now = new Date();
     const yyyymmdd = now.toISOString().slice(0, 10).replace(/-/g, '');
-    const storedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const todaysOrders = storedOrders.filter((order: any) =>
+    const storedOrders: Order[] = JSON.parse(localStorage.getItem('orders') || '[]');
+    const todaysOrders = storedOrders.filter((order) =>
       order.createdAt.startsWith(now.toISOString().slice(0, 10))
     );
     const orderNumber = `expo${yyyymmdd}-${String(todaysOrders.length + 1).padStart(3, '0')}`;
