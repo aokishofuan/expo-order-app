@@ -7,9 +7,18 @@ interface Props {
 }
 
 const PRODUCTS = [
-  { itemName: '月化粧6個入', itemCode: 'A001' },
-  { itemName: '月化粧10個入', itemCode: 'A002' },
-  { itemName: '月化粧16個入', itemCode: 'A003' },
+  { itemName: '月化粧(4個入)', itemCode: '035604' },
+  { itemName: '月化粧(6個入)', itemCode: '035606' },
+  { itemName: '月化粧(10個入)', itemCode: '035610' },
+  { itemName: '月化粧(16個入)', itemCode: '035616' },
+  { itemName: '伊右衛門月化粧(4個入)', itemCode: '009514' },
+  { itemName: '伊右衛門月化粧(6個入)', itemCode: '009515' },
+  { itemName: '伊右衛門月化粧(10個入)', itemCode: '009516' },
+  { itemName: '金の月化粧(10個入)', itemCode: '009056' },
+  { itemName: 'ワンピース月化粧(5個入)', itemCode: '009064' },
+  { itemName: '月化粧サブレ(6枚入)', itemCode: '036806' },
+  { itemName: '月化粧サブレ(10枚入)', itemCode: '036810' },
+  { itemName: '月化粧アソートボックス', itemCode: '009640' },
 ];
 
 const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
@@ -25,9 +34,18 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
   const [recipientAddress, setRecipientAddress] = useState('');
   const [recipientPhone, setRecipientPhone] = useState('');
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({
-    '月化粧6個入': 0,
-    '月化粧10個入': 0,
-    '月化粧16個入': 0,
+    '月化粧(4個入)': 0,
+    '月化粧(6個入)': 0,
+    '月化粧(10個入)': 0,
+    '月化粧(16個入)': 0,
+    '伊右衛門月化粧(4個入)': 0,
+    '伊右衛門月化粧(6個入)': 0,
+    '伊右衛門月化粧(10個入)': 0,
+    '金の月化粧(10個入)': 0,
+    'ワンピース月化粧(5個入)': 0,
+    '月化粧サブレ(6枚入)': 0,
+    '月化粧サブレ(10枚入)': 0,
+    '月化粧アソートボックス': 0,
   });
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -99,9 +117,18 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
     setRecipientAddress('');
     setRecipientPhone('');
     setQuantities({
-      '月化粧6個入': 0,
-      '月化粧10個入': 0,
-      '月化粧16個入': 0,
+      '月化粧(4個入)': 0,
+      '月化粧(6個入)': 0,
+      '月化粧(10個入)': 0,
+      '月化粧(16個入)': 0,
+      '伊右衛門月化粧(4個入)': 0,
+      '伊右衛門月化粧(6個入)': 0,
+      '伊右衛門月化粧(10個入)': 0,
+      '金の月化粧(10個入)': 0,
+      'ワンピース月化粧(5個入)': 0,
+      '月化粧サブレ(6枚入)': 0,
+      '月化粧サブレ(10枚入)': 0,
+      '月化粧アソートボックス': 0,
     });
     setShowConfirm(false);
   };
