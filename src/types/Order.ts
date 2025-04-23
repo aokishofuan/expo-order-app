@@ -21,5 +21,6 @@ export interface OrderItem {
     recipientPhone?: string;
     deliveryDate?: string;
     deliveryTime?: string;
+    isSameReceiver: boolean;
   }
   
