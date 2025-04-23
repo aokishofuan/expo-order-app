@@ -14,13 +14,16 @@ export interface OrderItem {
     phone: string;
     items: OrderItem[];
   
-    sameAsCustomer: boolean;
     recipientName?: string;
     recipientPostalCode?: string;
     recipientAddress?: string;
     recipientPhone?: string;
     deliveryDate?: string;
     deliveryTime?: string;
+    receiverName?: string;
+    receiverPostalCode?: string;
+    receiverAddress?: string;
+    receiverPhone?: string;
     isSameReceiver: boolean;
   }
   
