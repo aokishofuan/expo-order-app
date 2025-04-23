@@ -33,45 +33,47 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
   const [recipientPostalCode, setRecipientPostalCode] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
   const [recipientPhone, setRecipientPhone] = useState('');
-  const [quantities, setQuantities] = useState<{ [key: string]: number }>({
-    '月化粧(4個入)': 0,
-    '月化粧(6個入)': 0,
-    '月化粧(10個入)': 0,
-    '月化粧(16個入)': 0,
-    '伊右衛門月化粧(4個入)': 0,
-    '伊右衛門月化粧(6個入)': 0,
-    '伊右衛門月化粧(10個入)': 0,
-    '金の月化粧(10個入)': 0,
-    'ワンピース月化粧(5個入)': 0,
-    '月化粧サブレ(6枚入)': 0,
-    '月化粧サブレ(10枚入)': 0,
-    '月化粧アソートボックス': 0,
+  const [quantities, setQuantities] = useState<{ [key: string]: string }>({
+    '月化粧(4個入)': '',
+    '月化粧(6個入)': '',
+    '月化粧(10個入)': '',
+    '月化粧(16個入)': '',
+    '伊右衛門月化粧(4個入)': '',
+    '伊右衛門月化粧(6個入)': '',
+    '伊右衛門月化粧(10個入)': '',
+    '金の月化粧(10個入)': '',
+    'ワンピース月化粧(5個入)': '',
+    '月化粧サブレ(6枚入)': '',
+    '月化粧サブレ(10枚入)': '',
+    '月化粧アソートボックス': '',
   });
+  
 
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const items: OrderItem[] = PRODUCTS
-    .map((product) => {
-      const quantity = quantities[product.itemName] || 0;
-      if (quantity > 0) {
-        return {
-          itemName: product.itemName,
-          itemCode: product.itemCode,
-          quantity,
-        };
-      }
-      return null;
-    })
-    .filter((item) => item !== null) as OrderItem[];
-
-  const handleConfirm = () => {
-    const hasItems = items.length > 0;
-    if (!hasItems) {
-      alert('商品を1つ以上選択してください');
-      return;
+  const items: OrderItem[] = PRODUCTS.map((product) => {
+    const quantityStr = quantities[product.itemName];
+    const quantity = parseInt(quantityStr);
+    if (!isNaN(quantity) && quantity > 0) {
+      return {
+        itemName: product.itemName,
+        itemCode: product.itemCode,
+        quantity,
+      };
     }
-    setShowConfirm(true);
-  };
+    return null;
+  }).filter((item) => item !== null) as OrderItem[];
+  
+
+    const handleConfirm = () => {
+      const hasItems = Object.values(quantities).some((q) => q !== '' && parseInt(q) > 0);
+      if (!hasItems) {
+        alert('商品を1つ以上選択してください');
+        return;
+      }
+      setShowConfirm(true);
+    };
+    
 
   const handleSubmit = () => {
     const now = new Date();
@@ -218,19 +220,25 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
 
       <h2>商品選択</h2>
       {PRODUCTS.map((product) => (
-        <div key={product.itemName} style={{ marginBottom: '1rem' }}>
-          <label>{product.itemName}</label><br />
+        <div key={product.itemName} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+          <label style={{ width: '200px' }}>{product.itemName}</label>
           <input
             type="number"
-            min={0}
+            min="0"
             value={quantities[product.itemName]}
-            onChange={(e) => setQuantities({
-              ...quantities,
-              [product.itemName]: parseInt(e.target.value) || 0,
-            })}
-          /> 個
+            onChange={(e) =>
+              setQuantities({
+                ...quantities,
+                [product.itemName]: e.target.value,
+              })
+            }
+            style={{ width: '80px', marginLeft: '1rem' }}
+          />
+
+           <span style={{ marginLeft: '0.5rem' }}>個</span>
         </div>
       ))}
+
 
       <h2>お届け指定</h2>
       <div style={{ marginBottom: '1rem' }}>
