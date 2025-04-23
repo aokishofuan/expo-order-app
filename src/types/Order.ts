@@ -12,12 +12,14 @@ export interface OrderItem {
     postalCode: string;
     address: string;
     phone: string;
+    items: OrderItem[];
   
     sameAsCustomer: boolean;
     recipientName?: string;
     recipientPostalCode?: string;
     recipientAddress?: string;
     recipientPhone?: string;
-    items: OrderItem[];
+    deliveryDate?: string;
+    deliveryTime?: string;
   }
   
