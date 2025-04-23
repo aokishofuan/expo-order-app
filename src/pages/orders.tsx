@@ -48,34 +48,37 @@ const OrdersPage = () => {
     const rows: string[][] = orders.flatMap((order, index) => {
       const createdAt = new Date(order.createdAt);
       const orderNumber = formatOrderNumber(index, createdAt);
-
-      return order.items.map((item) => [
-        orderNumber,
-        createdAt.toLocaleString('ja-JP', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        order.name,
-        order.postalCode,
-        order.address,
-        order.phone,
-        '前払い',
-        order.receiverName,
-        order.receiverPostalCode,
-        order.receiverAddress,
-        order.receiverPhone,
-        'ヤマト運輸',
-        order.deliveryDate || '',
-        order.deliveryTime || '',
-        item.itemCode,
-        item.itemName,
-        item.quantity.toString(),
-      ]);
+    
+      return order.items?.map((item) => {
+        if (!item) return undefined;
+        return [
+          orderNumber,
+          createdAt.toLocaleString('ja-JP', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          order.name,
+          order.postalCode,
+          order.address,
+          order.phone,
+          '前払い',
+          order.receiverName,
+          order.receiverPostalCode,
+          order.receiverAddress,
+          order.receiverPhone,
+          'ヤマト運輸',
+          order.deliveryDate || '',
+          order.deliveryTime || '',
+          item.itemCode,
+          item.itemName,
+          item.quantity.toString(),
+        ];
+      }).filter((row): row is string[] => row !== undefined) ?? [];
     });
-
+    
     const csvContent =
       [headers, ...rows].map((row) => row.map((v) => `"${v}"`).join(',')).join('\n');
 

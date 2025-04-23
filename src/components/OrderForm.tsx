@@ -19,7 +19,7 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
   const [phone, setPhone] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('指定なし');
-  const [sameAsCustomer, setSameAsCustomer] = useState(true);
+  const [isSameReceiver, setIsSameReceiver] = useState(true);
   const [recipientName, setRecipientName] = useState('');
   const [recipientPostalCode, setRecipientPostalCode] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
@@ -74,11 +74,11 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
       phone,
       deliveryDate,
       deliveryTime,
-      isSameReceiver: sameAsCustomer,
-      receiverName: sameAsCustomer ? name : recipientName,
-      receiverPostalCode: sameAsCustomer ? postalCode : recipientPostalCode,
-      receiverAddress: sameAsCustomer ? address : recipientAddress,
-      receiverPhone: sameAsCustomer ? phone : recipientPhone,
+      isSameReceiver: isSameReceiver,
+      receiverName: isSameReceiver ? name : recipientName,
+      receiverPostalCode: isSameReceiver ? postalCode : recipientPostalCode,
+      receiverAddress: isSameReceiver ? address : recipientAddress,
+      receiverPhone: isSameReceiver ? phone : recipientPhone,
       items,
     };
 
@@ -93,7 +93,7 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
     setPhone('');
     setDeliveryDate('');
     setDeliveryTime('指定なし');
-    setSameAsCustomer(true);
+    setIsSameReceiver(true);
     setRecipientName('');
     setRecipientPostalCode('');
     setRecipientAddress('');
@@ -117,7 +117,7 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
         <p><strong>お届け日:</strong> {deliveryDate}</p>
         <p><strong>お届け時間:</strong> {deliveryTime}</p>
         <p><strong>お届け先:</strong></p>
-        <p>{sameAsCustomer ? '注文者と同じ' : (
+        <p>{isSameReceiver ? '注文者と同じ' : (
           <>
             {recipientName}<br />
             {recipientPostalCode}<br />
@@ -161,12 +161,14 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
       <h2>お届け先</h2>
       <div style={{ marginBottom: '1rem' }}>
         <label>
-          <input type="checkbox" checked={sameAsCustomer} onChange={(e) => setSameAsCustomer(e.target.checked)} />
+          <input type="checkbox"   
+          checked={isSameReceiver}
+          onChange={(e) => setIsSameReceiver(e.target.checked)} />
           ご注文者様とお届け先が同じ
         </label>
       </div>
 
-      {!sameAsCustomer && (
+      {!isSameReceiver && (
         <>
           <div style={{ marginBottom: '1rem' }}>
             <label>お届け先お名前</label><br />
