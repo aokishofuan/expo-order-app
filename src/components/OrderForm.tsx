@@ -20,19 +20,21 @@ const PRODUCTS = [
   { itemName: '月化粧サブレ(10枚入)', itemCode: '036810' },
   { itemName: '月化粧アソートボックス', itemCode: '009640' },
 ];
-const generateOrderNumber = (): string => {
-  const date = new Date();
-  const yyyymmdd = date.toISOString().slice(0, 10).replace(/-/g, '');
-  const serial = String(Date.now()).slice(-3); // 簡易的な連番
-  return `expo${yyyymmdd}-${serial}`;
-};
 
-// 注文作成時
-const newOrder = {
-  id: uuidv4(),
-  orderNumber: `expo${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${uuidv4().slice(0, 8)}`,
+ //使用していないため削除
+//const generateOrderNumber = (): string => {
+//  const date = new Date();
+//  const yyyymmdd = date.toISOString().slice(0, 10).replace(/-/g, '');
+//  const serial = String(Date.now()).slice(-3); // 簡易的な連番
+//  return `expo${yyyymmdd}-${serial}`;
+//};
+
+ //使用していないため削除
+//const newOrder = {
+//  id: uuidv4(),
+//  orderNumber: `expo${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${uuidv4().slice(0, 8)}`,
   // その他の注文情報
-};
+//};
 
 const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
   const [name, setName] = useState('');

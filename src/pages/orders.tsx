@@ -21,11 +21,12 @@ const OrdersPage = () => {
     }
   }, []);
 
-  const formatOrderNumber = (index: number, date: Date) => {
-    const yyyymmdd = date.toISOString().slice(0, 10).replace(/-/g, '');
-    const serial = String(index + 1).padStart(3, '0');
-    return `expo${yyyymmdd}-${serial}`;
-  };
+  //使用していないため削除
+  //const formatOrderNumber = (index: number, date: Date) => {
+  //  const yyyymmdd = date.toISOString().slice(0, 10).replace(/-/g, '');
+  //  const serial = String(index + 1).padStart(3, '0');
+  //  return `expo${yyyymmdd}-${serial}`;
+  //};
 
   const handleExportCSV = () => {
     const headers = [
@@ -41,8 +42,8 @@ const OrdersPage = () => {
       '配送先住所',
       '配送先電話番号',
       '配送方法名',
-      '配送時間名', // 順序を変更
-      '指定日',     // 順序を変更
+      '配送時間名', 
+      '指定日',   
       '商品コード',
       '商品名',
       '数量',
