@@ -3,6 +3,9 @@ import { Order } from '../types/Order';
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  // useStateに選択状態を追加
+  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set());
+
 
   useEffect(() => {
     const storedOrders = localStorage.getItem('orders');
@@ -38,17 +41,19 @@ const OrdersPage = () => {
       '配送先住所',
       '配送先電話番号',
       '配送方法名',
-      '指定日',
-      '配送時間名',
+      '配送時間名', // 順序を変更
+      '指定日',     // 順序を変更
       '商品コード',
       '商品名',
       '数量',
     ];
-
-    const rows: string[][] = orders.flatMap((order, index) => {
+  
+    const selectedOrders = orders.filter((order) => selectedOrderIds.has(order.id));
+  
+    const rows: string[][] = selectedOrders.flatMap((order) => {
       const createdAt = new Date(order.createdAt);
-      const orderNumber = formatOrderNumber(index, createdAt);
-    
+      const orderNumber = order.orderNumber; // 保存された orderNumber を使用
+  
       return order.items?.map((item) => {
         if (!item) return undefined;
         return [
@@ -70,18 +75,18 @@ const OrdersPage = () => {
           order.receiverAddress,
           order.receiverPhone,
           'ヤマト運輸',
-          order.deliveryDate || '',
           order.deliveryTime || '',
+          order.deliveryDate || '',
           item.itemCode,
           item.itemName,
           item.quantity.toString(),
         ];
       }).filter((row): row is string[] => row !== undefined) ?? [];
     });
-    
+  
     const csvContent =
       [headers, ...rows].map((row) => row.map((v) => `"${v}"`).join(',')).join('\n');
-
+  
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -90,7 +95,27 @@ const OrdersPage = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
   };
+
+  const handleDeleteSelectedOrders = () => {
+    if (selectedOrderIds.size === 0) return;
+  
+    // ユーザーに確認を求める
+    const confirmDelete = window.confirm('選択した注文を削除しますか？');
+    if (!confirmDelete) return;
+  
+    // 選択された注文を除外した新しい注文リストを作成
+    const updatedOrders = orders.filter((order) => !selectedOrderIds.has(order.id));
+  
+    // localStorage を更新
+    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+  
+    // 状態を更新
+    setOrders(updatedOrders);
+    setSelectedOrderIds(new Set());
+  };
+  
 
   return (
     <div style={{ padding: '2rem' }}>
@@ -100,47 +125,87 @@ const OrdersPage = () => {
         CSV出力
       </button>
 
-      <table border={1} cellPadding={8} style={{ width: '100%' }}>
-        <thead>
-          <tr>
-            <th>ショップ受注番号</th>
-            <th>お名前</th>
-            <th>郵便番号</th>
-            <th>住所</th>
-            <th>電話番号</th>
-            <th>商品内容</th>
-            <th>お届け日</th>
-            <th>お届け時間</th>
-            <th>受付日時</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order, index) => {
-            const createdAt = new Date(order.createdAt);
-            const orderNumber = formatOrderNumber(index, createdAt);
+      <button
+        onClick={handleDeleteSelectedOrders}
+        style={{ marginBottom: '1rem', marginLeft: '1rem' }}
+        disabled={selectedOrderIds.size === 0}
+      >
+        選択した注文を削除
+      </button>
 
-            return (
-              <tr key={order.id}>
-                <td>{orderNumber}</td>
-                <td>{order.name}</td>
-                <td>{order.postalCode}</td>
-                <td>{order.address}</td>
-                <td>{order.phone}</td>
-                <td>
-                  {order.items.map((item) => (
-                    <div key={item.itemCode}>
-                      {item.itemName} × {item.quantity}
-                    </div>
-                  ))}
-                </td>
-                <td>{order.deliveryDate || '—'}</td>
-                <td>{order.deliveryTime || '—'}</td>
-                <td>{createdAt.toLocaleString()}</td>
-              </tr>
-            );
-          })}
-        </tbody>
+
+      <table border={1} cellPadding={8} style={{ width: '100%' }}>
+      <thead>
+        <tr>
+          <th>
+            <input
+              type="checkbox"
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setSelectedOrderIds(new Set(orders.map((order) => order.id)));
+                } else {
+                  setSelectedOrderIds(new Set());
+                }
+              }}
+              checked={selectedOrderIds.size === orders.length}
+            />
+          </th>
+          <th>ショップ受注番号</th>
+          <th>お名前</th>
+          <th>郵便番号</th>
+          <th>住所</th>
+          <th>電話番号</th>
+          <th>商品内容</th>
+          <th>お届け日</th>
+          <th>お届け時間</th>
+          <th>受付日時</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {orders.map((order) => {
+          const createdAt = new Date(order.createdAt);
+          const orderNumber = order.orderNumber; // 保存された orderNumber を使用
+          const isSelected = selectedOrderIds.has(order.id);
+
+          return (
+            <tr key={order.id}>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={(e) => {
+                    const newSelected = new Set(selectedOrderIds);
+                    if (e.target.checked) {
+                      newSelected.add(order.id);
+                    } else {
+                      newSelected.delete(order.id);
+                    }
+                    setSelectedOrderIds(newSelected);
+                  }}
+                />
+              </td>
+              <td>{orderNumber}</td>
+              <td>{order.name}</td>
+              <td>{order.postalCode}</td>
+              <td>{order.address}</td>
+              <td>{order.phone}</td>
+              <td>
+                {order.items.map((item) => (
+                  <div key={item.itemCode}>
+                    {item.itemName} × {item.quantity}
+                  </div>
+                ))}
+              </td>
+              <td>{order.deliveryDate || '—'}</td>
+              <td>{order.deliveryTime || '—'}</td>
+              <td>{createdAt.toLocaleString()}</td>
+            </tr>
+          );
+        })}
+      </tbody>
       </table>
+
     </div>
   );
 };

@@ -20,6 +20,19 @@ const PRODUCTS = [
   { itemName: '月化粧サブレ(10枚入)', itemCode: '036810' },
   { itemName: '月化粧アソートボックス', itemCode: '009640' },
 ];
+const generateOrderNumber = (): string => {
+  const date = new Date();
+  const yyyymmdd = date.toISOString().slice(0, 10).replace(/-/g, '');
+  const serial = String(Date.now()).slice(-3); // 簡易的な連番
+  return `expo${yyyymmdd}-${serial}`;
+};
+
+// 注文作成時
+const newOrder = {
+  id: uuidv4(),
+  orderNumber: `expo${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${uuidv4().slice(0, 8)}`,
+  // その他の注文情報
+};
 
 const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
   const [name, setName] = useState('');
@@ -74,37 +87,44 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
       setShowConfirm(true);
     };
     
-
-  const handleSubmit = () => {
-    const now = new Date();
-    const yyyymmdd = now.toISOString().slice(0, 10).replace(/-/g, '');
-    const storedOrders: Order[] = JSON.parse(localStorage.getItem('orders') || '[]');
-    const todaysOrders = storedOrders.filter((order) =>
-      order.createdAt.startsWith(now.toISOString().slice(0, 10))
-    );
-    const orderNumber = `expo${yyyymmdd}-${String(todaysOrders.length + 1).padStart(3, '0')}`;
-
-    const newOrder: Order = {
-      id: uuidv4(),
-      createdAt: now.toISOString(),
-      orderNumber,
-      name,
-      postalCode,
-      address,
-      phone,
-      deliveryDate,
-      deliveryTime,
-      isSameReceiver: isSameReceiver,
-      receiverName: isSameReceiver ? name : recipientName,
-      receiverPostalCode: isSameReceiver ? postalCode : recipientPostalCode,
-      receiverAddress: isSameReceiver ? address : recipientAddress,
-      receiverPhone: isSameReceiver ? phone : recipientPhone,
-      items,
-    };
-
-    const updatedOrders = [...storedOrders, newOrder];
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
-    onAddOrder(newOrder);
+    const handleSubmit = () => {
+      const now = new Date();
+      const yyyymmdd = now.toISOString().slice(0, 10).replace(/-/g, '');
+    
+      // ① シリアル番号をlocalStorageから取得・更新
+      const serialData = JSON.parse(localStorage.getItem('orderSerials') || '{}');
+      const currentSerial = serialData[yyyymmdd] || 0;
+      const nextSerial = currentSerial + 1;
+      serialData[yyyymmdd] = nextSerial;
+      localStorage.setItem('orderSerials', JSON.stringify(serialData));
+    
+      // ② 注文番号を作成
+      const orderNumber = `expo${yyyymmdd}-${String(nextSerial).padStart(3, '0')}`;
+    
+      // ③ 注文データを構築
+      const storedOrders: Order[] = JSON.parse(localStorage.getItem('orders') || '[]');
+      const newOrder: Order = {
+        id: uuidv4(),
+        createdAt: now.toISOString(),
+        orderNumber,
+        name,
+        postalCode,
+        address,
+        phone,
+        deliveryDate,
+        deliveryTime,
+        isSameReceiver: isSameReceiver,
+        receiverName: isSameReceiver ? name : recipientName,
+        receiverPostalCode: isSameReceiver ? postalCode : recipientPostalCode,
+        receiverAddress: isSameReceiver ? address : recipientAddress,
+        receiverPhone: isSameReceiver ? phone : recipientPhone,
+        items,
+      };
+    
+      // ④ localStorageに保存 & 親に通知
+      const updatedOrders = [...storedOrders, newOrder];
+      localStorage.setItem('orders', JSON.stringify(updatedOrders));
+      onAddOrder(newOrder);
 
     // 入力をリセット
     setName('');
