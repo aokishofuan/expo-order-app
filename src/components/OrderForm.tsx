@@ -99,7 +99,7 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
         postalCode,
         address,
         phone,
-        deliveryDate,
+        deliveryDate: formData.deliveryDate || '',
         deliveryTime,
         isSameReceiver: isSameReceiver,
         receiverName: isSameReceiver ? name : recipientName,
