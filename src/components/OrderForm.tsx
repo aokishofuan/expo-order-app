@@ -90,8 +90,7 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
       const orderNumber = `expo${yyyymmdd}-${String(nextSerial).padStart(3, '0')}`;
     
       // ③ 注文データを構築
-      //const storedOrders: Order[] = JSON.parse(localStorage.getItem('orders') || '[]'); //不要なので削除
-      const newOrder: Order = {
+        const newOrder: Order = {
         id: uuidv4(),
         createdAt: now.toISOString(),
         orderNumber,
@@ -99,7 +98,7 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
         postalCode,
         address,
         phone,
-        deliveryDate: formData.deliveryDate || '',
+        deliveryDate: deliveryDate || '',
         deliveryTime,
         isSameReceiver: isSameReceiver,
         receiverName: isSameReceiver ? name : recipientName,
