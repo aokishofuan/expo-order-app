@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Order } from '../types/Order';
+import { deleteOrder, subscribeOrders } from '@/lib/orderService';
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -8,25 +9,18 @@ const OrdersPage = () => {
 
 
   useEffect(() => {
-    const storedOrders = localStorage.getItem('orders');
-    if (storedOrders) {
-      const parsedOrders: Order[] = JSON.parse(storedOrders);
-
+    const unsubscribe = subscribeOrders((ordersFromFirebase) => {
       // 重複排除（同じIDの注文を1つだけ残す）
       const uniqueOrders = Array.from(
-        new Map(parsedOrders.map(order => [order.id, order])).values()
+        new Map(ordersFromFirebase.map(order => [order.id, order])).values()
       );
-
       setOrders(uniqueOrders);
-    }
+    });
+  
+    // クリーンアップ（ページを閉じたら監視を止める）
+    return () => unsubscribe();
   }, []);
-
-  //使用していないため削除
-  //const formatOrderNumber = (index: number, date: Date) => {
-  //  const yyyymmdd = date.toISOString().slice(0, 10).replace(/-/g, '');
-  //  const serial = String(index + 1).padStart(3, '0');
-  //  return `expo${yyyymmdd}-${serial}`;
-  //};
+  
 
   const handleExportCSV = () => {
     const headers = [
@@ -99,24 +93,27 @@ const OrdersPage = () => {
     
   };
 
-  const handleDeleteSelectedOrders = () => {
+  const handleDeleteSelectedOrders = async () => {
     if (selectedOrderIds.size === 0) return;
   
-    // ユーザーに確認を求める
     const confirmDelete = window.confirm('選択した注文を削除しますか？');
     if (!confirmDelete) return;
   
-    // 選択された注文を除外した新しい注文リストを作成
-    const updatedOrders = orders.filter((order) => !selectedOrderIds.has(order.id));
+    // 削除処理（選択された注文IDを1件ずつFirebaseから削除）
+    for (const orderId of selectedOrderIds) {
+      await deleteOrder(orderId);
+    }
   
-    // localStorage を更新
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+    // 削除が終わったら最新のデータを取得し直す
+    const ordersSnapshot = await getDocs(collection(db, 'orders'));
+    const fetchedOrders = ordersSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Order[];
   
-    // 状態を更新
-    setOrders(updatedOrders);
+    setOrders(fetchedOrders);
     setSelectedOrderIds(new Set());
   };
-  
 
   return (
     <div style={{ padding: '2rem' }}>
