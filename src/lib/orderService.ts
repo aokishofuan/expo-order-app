@@ -1,42 +1,48 @@
 // src/lib/orderService.ts
-import { collection, addDoc, getDocs } from 'firebase/firestore'
-import { db } from '../firebase'
-import { onSnapshot } from 'firebase/firestore';
 
-// 注文を保存する
-export const saveOrder = async (orderData: any) => {
+import { collection, addDoc, getDocs, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
+import { Order } from '@/types';  // ←追加！(なければ型定義する)
+
+export const saveOrder = async (orderData: Order) => {  // ←anyじゃなくOrder型！
   try {
-    const docRef = await addDoc(collection(db, 'orders'), orderData)
-    console.log('注文保存完了:', docRef.id)
+    const docRef = await addDoc(collection(db, 'orders'), orderData);
+    console.log('注文保存完了:', docRef.id);
   } catch (e) {
-    console.error('注文保存エラー:', e)
+    console.error('注文保存エラー:', e);
   }
-}
+};
 
-// 注文を取得する
-export const getOrders = async () => {  // ←ここ名前を変更
+export const deleteOrder = async (id: string) => {
   try {
-    const querySnapshot = await getDocs(collection(db, 'orders'))
+    await deleteDoc(doc(db, 'orders', id));
+    console.log('注文削除完了:', id);
+  } catch (e) {
+    console.error('注文削除エラー:', e);
+  }
+};
+
+export const getOrders = async (): Promise<Order[]> => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'orders'));
     const orders = querySnapshot.docs.map(doc => ({
       id: doc.id,
-      ...doc.data()
-    }))
-    return orders
+      ...doc.data(),
+    })) as Order[];
+    return orders;
   } catch (e) {
-    console.error('注文取得エラー:', e)
-    return []
+    console.error('注文取得エラー:', e);
+    return [];
   }
-}
+};
 
-// 注文のリアルタイム取得
-export const subscribeOrders = (callback: (orders: any[]) => void) => {
-    const ordersCollection = collection(db, 'orders');
-  
-    return onSnapshot(ordersCollection, (snapshot) => {
-      const orders = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      callback(orders);
-    });
-  };
+export const subscribeOrders = (callback: (orders: Order[]) => void) => {
+  return onSnapshot(collection(db, 'orders'), (snapshot) => {
+    const orders = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Order[];
+    callback(orders);
+  });
+};
+

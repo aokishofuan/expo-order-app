@@ -90,7 +90,7 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
       const orderNumber = `expo${yyyymmdd}-${String(nextSerial).padStart(3, '0')}`;
     
       // ③ 注文データを構築
-      const storedOrders: Order[] = JSON.parse(localStorage.getItem('orders') || '[]');
+      //const storedOrders: Order[] = JSON.parse(localStorage.getItem('orders') || '[]'); //不要なので削除
       const newOrder: Order = {
         id: uuidv4(),
         createdAt: now.toISOString(),
