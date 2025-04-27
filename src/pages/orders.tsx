@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Order } from '../types/Order';
 import { deleteOrder, subscribeOrders } from '@/lib/orderService';
-import { collection, addDoc, getDocs, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+import { collection,  getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const OrdersPage = () => {
