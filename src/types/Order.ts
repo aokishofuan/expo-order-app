@@ -1,6 +1,6 @@
 // src/types/Order.ts
 
-export type Item = {
+export type OrderItem = {
   itemName: string;
   itemCode: string;
   quantity: number;
@@ -14,7 +14,7 @@ export type Order = {
   postalCode: string;
   address: string;
   phone: string;
-  items: Item[];
+  items: OrderItem[]; 
 
   isSameReceiver: boolean;
   receiverName: string;
