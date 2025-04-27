@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Order } from '../types/Order';
 import { deleteOrder, subscribeOrders } from '@/lib/orderService';
-import { getDocs } from 'firebase/firestore';
+import { getDocs, collection } from 'firebase/firestore';
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
