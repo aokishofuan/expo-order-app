@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Order, OrderItem } from '../types/Order';
 import { v4 as uuidv4 } from 'uuid';
 import { saveOrder } from '../lib/orderService'
+import { OrderConfirm } from "../components/OrderConfirm";
 
 interface Props {
   onAddOrder: (order: Order) => void;
@@ -79,14 +80,21 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
       const now = new Date();
       const yyyymmdd = now.toISOString().slice(0, 10).replace(/-/g, '');
     
-      // ① シリアル番号をlocalStorageから取得・更新
-      const serialData = JSON.parse(localStorage.getItem('orderSerials') || '{}');
-      const currentSerial = serialData[yyyymmdd] || 0;
+      // === 修正ステップ1＆2：localStorageの読み込みとパースの安全化 ===
+      let serialData = {};
+      try {
+        const rawSerialData = localStorage.getItem('orderSerials');
+        serialData = rawSerialData ? JSON.parse(rawSerialData) : {};
+      } catch (error) {
+        console.error('orderSerials の読み込み・パースに失敗しました。初期化します。', error);
+        serialData = {};
+      }
+    
+      const currentSerial = typeof serialData[yyyymmdd] === 'number' ? serialData[yyyymmdd] : 0;
       const nextSerial = currentSerial + 1;
       serialData[yyyymmdd] = nextSerial;
       localStorage.setItem('orderSerials', JSON.stringify(serialData));
     
-      // ② 注文番号を作成
       const orderNumber = `expo${yyyymmdd}-${String(nextSerial).padStart(3, '0')}`;
     
       // ③ 注文データを構築
@@ -151,33 +159,25 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
 
   if (showConfirm) {
     return (
-      <div style={{ maxWidth: 500, margin: 'auto' }}>
-        <h2>確認画面</h2>
-        <p><strong>お名前:</strong> {name}</p>
-        <p><strong>郵便番号:</strong> {postalCode}</p>
-        <p><strong>住所:</strong> {address}</p>
-        <p><strong>電話番号:</strong> {phone}</p>
-        <p><strong>お届け日:</strong> {deliveryDate}</p>
-        <p><strong>お届け時間:</strong> {deliveryTime}</p>
-        <p><strong>お届け先:</strong></p>
-        <p>{isSameReceiver ? '注文者と同じ' : (
-          <>
-            {recipientName}<br />
-            {recipientPostalCode}<br />
-            {recipientAddress}<br />
-            {recipientPhone}
-          </>
-        )}</p>
-        <p><strong>商品内容:</strong></p>
-        <ul>
-          {items.map((item) => (
-            <li key={item.itemCode}>{item.itemName} × {item.quantity}</li>
-          ))}
-        </ul>
-
-        <button onClick={() => setShowConfirm(false)}>戻る</button>{' '}
-        <button onClick={handleSubmit}>注文を確定する</button>
-      </div>
+    <OrderConfirm
+      orderData={{
+        name,
+        postalCode,
+        address,
+        phone,
+        deliveryDate,
+        deliveryTime,
+        items: Object.entries(quantities)
+          .filter(([_, quantity]) => Number(quantity) > 0)
+          .map(([name, quantity]) => ({
+            code: '', // 商品コードがあればここに設定
+            name,
+            quantity: Number(quantity),
+          }))
+      }}
+      onBack={() => setShowConfirm(false)}
+      onSubmit={handleSubmit}
+    />
     );
   }
 
