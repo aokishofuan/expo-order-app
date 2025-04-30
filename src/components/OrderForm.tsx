@@ -168,7 +168,7 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
         deliveryDate,
         deliveryTime,
         items: Object.entries(quantities)
-          .filter(([_, quantity]) => Number(quantity) > 0)
+          .filter(([itemName, quantity]) => Number(quantity) > 0)
           .map(([name, quantity]) => ({
             code: '', // 商品コードがあればここに設定
             name,
