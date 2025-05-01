@@ -167,13 +167,13 @@ const OrderForm: React.FC<Props> = ({ onAddOrder }) => {
         phone,
         deliveryDate,
         deliveryTime,
-        items: Object.entries(quantities)
-          .filter(([itemName, quantity]) => Number(quantity) > 0)
-          .map(([name, quantity]) => ({
-            code: '', // 商品コードがあればここに設定
-            name,
-            quantity: Number(quantity),
-          }))
+      items: Object.entries(quantities)
+      .filter(([_, quantity]: [string, string]) => Number(quantity) > 0)
+      .map(([itemName, quantity]: [string, string]) => ({
+        code: '',
+        name: itemName,
+        quantity: Number(quantity),
+      }))
       }}
       onBack={() => setShowConfirm(false)}
       onSubmit={handleSubmit}
